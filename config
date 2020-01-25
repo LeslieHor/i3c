@@ -18,13 +18,15 @@ floating_modifier Mod4
 # class                 border  bground text    indicator child_border
 client.focused          #006600 #004400 #FFFFFF #004400   #006600
 client.focused_inactive #333333 #222222 #FFFFFF #FF0000   #333333
-client.unfocused        #333333 #555555 #FFFFFF #FF0000   #FF0000
+client.unfocused        #333333 #555555 #FFFFFF #FF0000   #333333
 client.urgent           #FF0000 #FF0000 #FFFFFF #FF0000   #FF0000
 client.placeholder      #FF0000 #FF0000 #FFFFFF #FF0000   #FF0000
 
 client.background       #FFFFFF
 
 ## Keybind shortcuts
+
+set $i3c ~/.config/i3/i3c
 
 ### default
 set $mod Mod4
@@ -45,8 +47,8 @@ set $s4 Shift+Mod1+Mod4
 
 ## Windows
 mode "window" {
-    bindsym h exec ~/.config/i3/i3c split-right ; mode "default"
-    bindsym v exec ~/.config/i3/i3c split-down ; mode "default"
+    bindsym h exec $i3c split-right ; mode "default"
+    bindsym v exec $i3c split-down ; mode "default"
     bindsym u focus parent ; mode "default"
     bindsym d focus child ; mode "default"
 
@@ -54,17 +56,17 @@ mode "window" {
 }
 
 mode "frame" {
-    bindsym r exec ~/.config/i3/i3c rename-workspace $(echo -n | dmenu -p "Rename workspace:") ; mode "default"
-    bindsym c exec ~/.config/i3/i3c create-new-workspace ; mode "default"
+    bindsym r exec $i3c rename-workspace $(echo -n | dmenu -p "Rename workspace:") ; mode "default"
+    bindsym c exec $i3c create-new-workspace ; mode "default"
 
     bindsym Escape mode "default"
 }
 
 mode "buffer" {
-    bindsym y exec ~/.config/i3/i3c buffer-yank ; mode "default"
-    bindsym p exec ~/.config/i3/i3c buffer-paste ; mode "default"
-    bindsym j exec ~/.config/i3/i3c jump-to-window ; mode "default"
-    bindsym b exec ~/.config/i3/i3c bring-window ; mode "default"
+    bindsym y exec $i3c buffer-yank ; mode "default"
+    bindsym p exec $i3c buffer-paste ; mode "default"
+    bindsym j exec $i3c jump-to-window ; mode "default"
+    bindsym b exec $i3c bring-window ; mode "default"
 
     bindsym Escape mode "default"
 }
@@ -80,21 +82,21 @@ bindsym Control+Shift+Mod1+Mod4+space exec i3-sensible-terminal
 
 ## SYS-1
 
-bindsym $s1+1 exec ~/.config/i3/i3c focus-workspace 1
-bindsym $s1+2 exec ~/.config/i3/i3c focus-workspace 2
-bindsym $s1+3 exec ~/.config/i3/i3c focus-workspace 3
-bindsym $s1+4 exec ~/.config/i3/i3c focus-workspace 4
-bindsym $s1+5 exec ~/.config/i3/i3c focus-workspace 5
-bindsym $s1+6 exec ~/.config/i3/i3c focus-workspace 6
-bindsym $s1+7 exec ~/.config/i3/i3c focus-workspace 7
-bindsym $s1+8 exec ~/.config/i3/i3c focus-workspace 8
-bindsym $s1+9 exec ~/.config/i3/i3c focus-workspace 9
-bindsym $s1+0 exec ~/.config/i3/i3c focus-workspace 10
+bindsym $s1+1 exec $i3c focus-workspace 1
+bindsym $s1+2 exec $i3c focus-workspace 2
+bindsym $s1+3 exec $i3c focus-workspace 3
+bindsym $s1+4 exec $i3c focus-workspace 4
+bindsym $s1+5 exec $i3c focus-workspace 5
+bindsym $s1+6 exec $i3c focus-workspace 6
+bindsym $s1+7 exec $i3c focus-workspace 7
+bindsym $s1+8 exec $i3c focus-workspace 8
+bindsym $s1+9 exec $i3c focus-workspace 9
+bindsym $s1+0 exec $i3c focus-workspace 10
 
-bindsym $s1+h exec ~/.config/i3/i3c focus-left
-bindsym $s1+j exec ~/.config/i3/i3c focus-down
-bindsym $s1+k exec ~/.config/i3/i3c focus-up
-bindsym $s1+l exec ~/.config/i3/i3c focus-right
+bindsym $s1+h exec $i3c focus-left
+bindsym $s1+j exec $i3c focus-down
+bindsym $s1+k exec $i3c focus-up
+bindsym $s1+l exec $i3c focus-right
 
 # bindsym $s1+h focus left
 # bindsym $s1+j focus down
@@ -105,15 +107,15 @@ bindsym $s1+q kill
 bindsym $s1+b mode "buffer"
 bindsym $s1+o exec dmenu_run
 bindsym $s1+w mode "window"
-bindsym $s1+comma exec ~/.config/i3/i3c prev-tab
-bindsym $s1+period exec ~/.config/i3/i3c next-tab
+bindsym $s1+comma exec $i3c prev-tab
+bindsym $s1+period exec $i3c next-tab
 
 ## SYS-2
 
-bindsym $s2+h resize shrink width 10 px or 10 ppt
-bindsym $s2+j resize grow height 10 px or 10 ppt
-bindsym $s2+k resize shrink height 10 px or 10 ppt
-bindsym $s2+l resize grow width 10 px or 10 ppt
+bindsym $s2+h resize shrink width 2 px or 2 ppt
+bindsym $s2+j resize grow height 2 px or 2 ppt
+bindsym $s2+k resize shrink height 2 px or 2 ppt
+bindsym $s2+l resize grow width 2 px or 2 ppt
 
 ## SYS-3
 
@@ -135,10 +137,10 @@ bindsym $s3+j move down
 bindsym $s3+k move up
 bindsym $s3+l move right
 
-bindsym $s3+p exec ~/.config/i3/i3c prev-workspace
-bindsym $s3+n exec ~/.config/i3/i3c next-workspace
-bindsym $s3+comma exec ~/.config/i3/i3c swap-workspace-left
-bindsym $s3+period exec ~/.config/i3/i3c swap-workspace-right
+bindsym $s3+p exec $i3c prev-workspace
+bindsym $s3+n exec $i3c next-workspace
+bindsym $s3+comma exec $i3c swap-workspace-left
+bindsym $s3+period exec $i3c swap-workspace-right
 
 # split in horizontal orientation
 bindsym $mod+h split h

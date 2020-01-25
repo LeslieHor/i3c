@@ -508,10 +508,6 @@ class I3C:
         empty_window_str = '[con_id=' + str(empty_window_id) + ']'
         call(['i3-msg', empty_window_str, 'kill'])
 
-        # Make sure focus returns to the yanked window
-        # call(['i3-msg', window_str, 'focus'])
-
-
 if len(sys.argv) <= 0:
     exit(1)
 
