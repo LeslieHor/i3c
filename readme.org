@@ -17,3 +17,6 @@ i3c --> ~/.config/i3/i3c
 dzen2_bar --> ~/.config/i3status/dzen2_bar
 run_dzen2_bar --> ~/.config/i3status/run_dzen2_bar
 #+END_SRC
+
+You may have to edit the following:
+=window-id-buffer= file path in the =i3c= python script
