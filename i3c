@@ -378,11 +378,11 @@ class I3C:
         focused_window = focused_node['window']
         focused_window_id = focused_window['id']
         # TODO : figure out a better file name
-        with open('/home/leslie/test', 'w') as f:
+        with open('/home/leslie/.config/i3/window-id-buffer', 'w') as f:
             f.write(str(focused_window_id))
 
     def buffer_paste(self):
-        with open('/home/leslie/test', 'r') as f:
+        with open('/home/leslie/.config/i3/window-id-buffer', 'r') as f:
             window_id = f.read()
 
         # Create a placeholder window
@@ -479,6 +479,39 @@ class I3C:
             return
         call(['i3-msg workspace number', len(workspace_nums) + 1])
 
+    def prompt_for_window(self, prompt):
+        return call(['wmctrl -l |',
+                     'awk \'{printf $1" : "$2+1" : "; for(i=4;i<=NF;i++) printf $i" "; print""}\' |',
+                     'sort -t":" -k2 |',
+                     'dmenu -i -l 10 -p "%s" | ' % prompt,
+                     'awk \'{print $1}\'']).rstrip()
+
+    def jump_to_window(self):
+        window_id = self.prompt_for_window("Jump")
+        window_id_str = "[id=%s]" % window_id
+        call(['i3-msg', window_id_str, 'focus'])
+
+    def bring_window(self):
+        window_id = self.prompt_for_window("Bring")
+        call('i3 open')
+
+        # Get placeholder window id
+        self.reload_tree()
+        empty_window = self.get_empty_window()
+        empty_window_id = empty_window['id']
+
+        # Swap the placeholder window with the yanked id
+        window_str = '[id=' + str(window_id) + ']'
+        call(['i3-msg', window_str, 'swap container with con_id', empty_window_id])
+
+        # Remove the place holder window
+        empty_window_str = '[con_id=' + str(empty_window_id) + ']'
+        call(['i3-msg', empty_window_str, 'kill'])
+
+        # Make sure focus returns to the yanked window
+        # call(['i3-msg', window_str, 'focus'])
+
+
 if len(sys.argv) <= 0:
     exit(1)
 
@@ -519,6 +552,10 @@ elif command == 'rename-workspace':
     i3c.rename_workspace(sys.argv[2])
 elif command == 'create-new-workspace':
     i3c.create_new_workspace()
+elif command == 'jump-to-window':
+    i3c.jump_to_window()
+elif command == 'bring-window':
+    i3c.bring_window()
 
 elif command == 'get-output-nums':
     i3c.get_output_nums()

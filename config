@@ -63,6 +63,8 @@ mode "frame" {
 mode "buffer" {
     bindsym y exec ~/.config/i3/i3c buffer-yank ; mode "default"
     bindsym p exec ~/.config/i3/i3c buffer-paste ; mode "default"
+    bindsym j exec ~/.config/i3/i3c jump-to-window ; mode "default"
+    bindsym b exec ~/.config/i3/i3c bring-window ; mode "default"
 
     bindsym Escape mode "default"
 }

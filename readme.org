@@ -1,12 +1,11 @@
 #+TITLE: readme
 
 * TODO
-- [ ] use dzen2 status bar
-- [ ] change repo
-- [ ] change renaming to preserve workspace number
-- [ ] figure out how splitting should work
-- [ ] function to bring buffer
-- [ ] function to jump to buffer
+- [x] use dzen2 status bar
+- [x] change renaming to preserve workspace number
+- [x] figure out how splitting should work
+- [x] function to bring buffer
+- [x] function to jump to buffer
 
 * Instructions
 
