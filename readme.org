@@ -1,0 +1,20 @@
+#+TITLE: readme
+
+* TODO
+- [ ] use dzen2 status bar
+- [ ] change repo
+- [ ] change renaming to preserve workspace number
+- [ ] figure out how splitting should work
+- [ ] function to bring buffer
+- [ ] function to jump to buffer
+
+* Instructions
+
+Sym link the following:
+#+BEGIN_SRC
+config --> ~/.config/i3/config
+i3c --> ~/.config/i3/i3c
+
+dzen2_bar --> ~/.config/i3status/dzen2_bar
+run_dzen2_bar --> ~/.config/i3status/run_dzen2_bar
+#+END_SRC
