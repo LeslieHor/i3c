@@ -27,6 +27,7 @@ client.background       #FFFFFF
 ## Keybind shortcuts
 
 set $i3c ~/.config/i3/i3c
+set $exit mode "default"
 
 ### default
 set $mod Mod4
@@ -47,28 +48,28 @@ set $s4 Shift+Mod1+Mod4
 
 ## Windows
 mode "window" {
-    bindsym h exec $i3c split-right ; mode "default"
-    bindsym v exec $i3c split-down ; mode "default"
-    bindsym u focus parent ; mode "default"
-    bindsym d focus child ; mode "default"
+    bindsym h exec $i3c split-right ; $exit
+    bindsym v exec $i3c split-down ; $exit
+    bindsym u focus parent ; $exit
+    bindsym d focus child ; $exit
 
-    bindsym Escape mode "default"
+    bindsym Escape $exit
 }
 
 mode "frame" {
-    bindsym r exec $i3c rename-workspace $(echo -n | dmenu -p "Rename workspace:") ; mode "default"
-    bindsym c exec $i3c create-new-workspace ; mode "default"
+    bindsym r exec $i3c rename-workspace $(echo -n | dmenu -p "Rename workspace:") ; $exit
+    bindsym c exec $i3c create-new-workspace ; $exit
 
-    bindsym Escape mode "default"
+    bindsym Escape $exit
 }
 
 mode "buffer" {
-    bindsym y exec $i3c buffer-yank ; mode "default"
-    bindsym p exec $i3c buffer-paste ; mode "default"
-    bindsym j exec $i3c jump-to-window ; mode "default"
-    bindsym b exec $i3c bring-window ; mode "default"
+    bindsym y exec $i3c buffer-yank ; $exit
+    bindsym p exec $i3c buffer-paste ; $exit
+    bindsym j exec $i3c jump-to-window ; $exit
+    bindsym b exec $i3c bring-window ; $exit
 
-    bindsym Escape mode "default"
+    bindsym Escape $exit
 }
 
 # Mouse bindings

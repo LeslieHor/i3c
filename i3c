@@ -340,11 +340,11 @@ class I3C:
 
     def split(self, direction):
         if direction == 'right':
-            self._split('horizontal')
+            self._split('horizontal', 'vertical')
         elif direction == 'down':
-            self._split('vertical')
+            self._split('vertical', 'horizontal')
 
-    def _split(self, direction):
+    def _split(self, direction, other_direction):
         parent_window_data = self.get_windows_with_parent_data()
         focused_node = filter(lambda w: w['window']['focused'], parent_window_data)[0]
         focused_window = focused_node['window']
@@ -363,13 +363,21 @@ class I3C:
         # call(['i3-msg', focused_window_str, 'swap container with con_id', empty_window_id])
         # above code crashes i3 when splitting a tabbed container that is the
         # only container on the workspace
-        call(['i3-msg', empty_window_str, 'swap container with con_id', focused_window_id])
+        call(['i3-msg', empty_window_str, 'swap container with con_id',
+              focused_window_id])
 
         call(['i3-msg', empty_window_str, 'kill'])
 
         call(['i3-msg', focused_window_str, 'focus'])
-        # TODO : figure out how to make the newly created split be tabbed by default
-        # call(['i3-msg', focused_window_str, 'layout tabbed'])
+        time.sleep(1)
+
+        self.reload_tree()
+        new_parent_window_data = self.get_windows_with_parent_data()
+        focused_node = filter(lambda w: w['window']['focused'],
+                              new_parent_window_data)[0]
+        if focused_node['parent']['layout'] != "tabbed":
+            call(['i3-msg split', other_direction])
+            call('i3-msg layout tabbed')
 
     def buffer_yank(self):
         """copy the active id into a file"""
@@ -393,12 +401,13 @@ class I3C:
         empty_window = self.get_empty_window()
         empty_window_id = empty_window['id']
 
-        # Swap the placeholder window with the yanked id
         window_str = '[con_id=' + str(window_id) + ']'
-        call(['i3-msg', window_str, 'swap container with con_id', empty_window_id])
+        empty_window_str = '[con_id=' + str(empty_window_id) + ']'
+
+        # Swap the placeholder window with the yanked id
+        call(['i3-msg', empty_window_str, 'swap container with con_id', window_id])
 
         # Remove the place holder window
-        empty_window_str = '[con_id=' + str(empty_window_id) + ']'
         call(['i3-msg', empty_window_str, 'kill'])
 
         # Make sure focus returns to the yanked window
