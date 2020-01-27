@@ -359,17 +359,11 @@ class I3C:
         focused_window_str = '[con_id=' + str(focused_window_id) + ']'
         empty_window_str = '[con_id=' + str(empty_window_id) + ']'
 
-        # Note: For some reason, swapping them backwards crashes i3.
-        # call(['i3-msg', focused_window_str, 'swap container with con_id', empty_window_id])
-        # above code crashes i3 when splitting a tabbed container that is the
-        # only container on the workspace
-        call(['i3-msg', empty_window_str, 'swap container with con_id',
-              focused_window_id])
-
+        call(['i3-msg', focused_window_str, 'move container to workspace temp'])
+        call(['i3-msg', empty_window_str, 'focus'])
+        call(['i3-msg', focused_window_str, 'move container to workspace current'])
         call(['i3-msg', empty_window_str, 'kill'])
-
         call(['i3-msg', focused_window_str, 'focus'])
-        time.sleep(1)
 
         self.reload_tree()
         new_parent_window_data = self.get_windows_with_parent_data()
@@ -393,25 +387,17 @@ class I3C:
         with open('/home/leslie/.config/i3/window-id-buffer', 'r') as f:
             window_id = f.read()
 
-        # Create a placeholder window
-        call('i3-msg open')
-
-        # Get placeholder window id
-        self.reload_tree()
-        empty_window = self.get_empty_window()
-        empty_window_id = empty_window['id']
+        parent_window_data = self.get_windows_with_parent_data()
+        focused_node = filter(lambda w: w['window']['focused'], parent_window_data)[0]
+        focused_window = focused_node['window']
+        focused_window_id = focused_window['id']
 
         window_str = '[con_id=' + str(window_id) + ']'
-        empty_window_str = '[con_id=' + str(empty_window_id) + ']'
+        focused_window_str = '[con_id=' + str(focused_window_id) + ']'
 
-        # Swap the placeholder window with the yanked id
-        call(['i3-msg', empty_window_str, 'swap container with con_id', window_id])
-
-        # Remove the place holder window
-        call(['i3-msg', empty_window_str, 'kill'])
-
-        # Make sure focus returns to the yanked window
-        call(['i3-msg', window_str, 'focus'])
+        call(['i3-msg', window_str, 'move container to workspace temp'])
+        call(['i3-msg', focused_window_str, 'focus'])
+        call(['i3-msg', window_str, 'move container to workspace current'])
 
     def get_output_nums(self):
         outputs = self.get_outputs()
@@ -502,20 +488,20 @@ class I3C:
 
     def bring_window(self):
         window_id = self.prompt_for_window("Bring")
-        call('i3 open')
-
-        # Get placeholder window id
-        self.reload_tree()
-        empty_window = self.get_empty_window()
-        empty_window_id = empty_window['id']
-
-        # Swap the placeholder window with the yanked id
         window_str = '[id=' + str(window_id) + ']'
-        call(['i3-msg', window_str, 'swap container with con_id', empty_window_id])
 
-        # Remove the place holder window
-        empty_window_str = '[con_id=' + str(empty_window_id) + ']'
-        call(['i3-msg', empty_window_str, 'kill'])
+        parent_window_data = self.get_windows_with_parent_data()
+        focused_node = filter(lambda w: w['window']['focused'], parent_window_data)[0]
+        focused_window = focused_node['window']
+        focused_window_id = focused_window['id']
+        focused_window_str = '[con_id=' + str(focused_window_id) + ']'
+
+
+        call(['i3-msg', window_str, 'move container to workspace temp'])
+        call(['i3-msg', focused_window_str, 'focus'])
+        call(['i3-msg', window_str, 'move container to workspace current'])
+
+
 
 if len(sys.argv) <= 0:
     exit(1)

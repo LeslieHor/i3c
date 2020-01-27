@@ -79,6 +79,7 @@ bindsym --release button2 kill
 
 # Keybindings
 
+bindsym Mod4+l exec i3lock -fc 222222
 bindsym Control+Shift+Mod1+Mod4+space exec i3-sensible-terminal
 
 ## SYS-1
