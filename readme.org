@@ -18,6 +18,8 @@ dzen2_bar --> ~/.config/i3status/dzen2_bar
 run_dzen2_bar --> ~/.config/i3status/run_dzen2_bar
 #+END_SRC
 
-You may have to edit the following:
+* 4.12 User Guide
+https://github.com/i3/i3/blob/c9f0bc174d0746c925443d49bcc07727b631e335/docs/userguide
 
-=window-id-buffer= file path in the =i3c= python script
+* 4.14.1 User Guide
+https://github.com/i3/i3/blob/83a62267dce22d5d898d861bc957a6266268d030/docs/userguide
