@@ -18,6 +18,26 @@ dzen2_bar --> ~/.config/i3status/dzen2_bar
 run_dzen2_bar --> ~/.config/i3status/run_dzen2_bar
 #+END_SRC
 
+* Recommended settings
+Set =firefox= to not use tabs
+
+Go to =about:config= and set =browser.tabs.opentabfor.middleclick= to =false=.
+
+Rebind =t= and =T= in =vimpterator= to open new windows:
+
+#+BEGIN_SRC
+:bind t fillcmdline winopen
+:bind T current_url winopen
+#+END_SRC
+
+Set the =userChrome.css= to not show the tab bar by adding the following line to it:
+
+#+BEGIN_SRC css
+#tabbrowser-tabs { visibility: collapse !important; }
+#+END_SRC
+
+It is located in =~/.mozilla/firefox/<ID>.default/chrome/userChrome.css=. If it doesn't exist, create it.
+
 * 4.12 User Guide
 https://github.com/i3/i3/blob/c9f0bc174d0746c925443d49bcc07727b631e335/docs/userguide
 

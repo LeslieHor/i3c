@@ -11,6 +11,17 @@ BAR_FG="#ffffff"
 BAR_BG="#222222"
 BAR_MARGIN=10
 
+cpu() {
+    ps -eo pcpu | awk 'BEGIN {sum=0.0f} {sum+=$1} END {print sum}'
+}
+
+ram() {
+    read -r t f <<< $(grep -E 'Mem(Total|Free)' /proc/meminfo |awk '{print $2}' | tr '\n' ' ')
+    read -r b c <<< $(grep -E '^(Buffers|Cached)' /proc/meminfo |awk '{print $2}' | tr '\n' ' ')
+
+    echo "100 * ($t - $f - $c - $b) / $t" | bc
+}
+
 while sleep 1; do
     # Left block
     left=""
@@ -22,7 +33,7 @@ while sleep 1; do
 
     # Centre block
     centre=""
-    centre="${centre}$(date +%H:%M:%S)"
+    centre="${centre}"
 
     ## find the offset for the centre block
     width=$(dzen2-textwidth "${BAR_FONT}" "${centre}")
@@ -33,11 +44,18 @@ while sleep 1; do
     # Right block
     right=""
     right="${right}"
-    right="${right}$(date +%Y-%m-%d)"
+    right="${right}CPU: $(cpu)% | "
+    right="${right}RAM: $(ram)% | "
+    right="${right}$(date +%Y-%m-%d) "
+    right="${right}$(date +%H:%M:%S)"
 
     ## find the offset for the right block
     width=$(dzen2-textwidth "${BAR_FONT}" "${right}")
     offset=$((${BAR_WIDTH} - ${width} - ${BAR_MARGIN}))
+
+    # Correct percentage signs
+    right=$(echo ${right} | sed 's/%/%%/g')
+
     printf "^pa(${offset})"
     printf "${right}"
 
