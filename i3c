@@ -13,13 +13,6 @@ def call(command):
     result, _err = proc.communicate()
     return result
 
-def call_async(command):
-    """Call into system and run command async"""
-    cmd = join_and_sanitize(command)
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            shell=True)
-    return proc.pid
-
 def join_and_sanitize(list_):
     """Join a list of items into a single string"""
     if isinstance(list_, str):
@@ -40,9 +33,6 @@ def join_and_sanitize(list_):
 
     return ' '.join(new_list)
 
-def get_active_window_id():
-    return int(call('xdotool getactivewindow').rstrip())
-
 class I3C:
     def __init__(self):
         self.tree = {}
@@ -50,44 +40,36 @@ class I3C:
         self.outputs = {}
         self.displays = []
 
-    def get_tree(self):
-        if self.tree == {}:
-            self.reload_tree()
+    def get_tree(self, force=False):
+        if self.tree == {} or force:
+            self.tree = json.loads(call('i3-msg -t get_tree'))
         return self.tree
 
-    def get_workspaces(self):
-        if self.workspaces == {}:
-            self.reload_workspaces()
+    def get_workspaces(self, force=False):
+        if self.workspaces == {} or force:
+            self.workspaces = json.loads(call('i3-msg -t get_workspaces'))
         return self.workspaces
 
-    def get_outputs(self):
-        if self.outputs == {}:
-            self.reload_outputs()
+    def get_outputs(self, force=False):
+        if self.outputs == {} or force:
+            self.outputs = json.loads(call('i3-msg -t get_outputs'))
         return self.outputs
 
-    def reload_tree(self):
-        self.tree = json.loads(call('i3-msg -t get_tree'))
-
-    def reload_workspaces(self):
-        self.workspaces = json.loads(call('i3-msg -t get_workspaces'))
-
-    def reload_outputs(self):
-        self.outputs = json.loads(call('i3-msg -t get_outputs'))
-
-    def get_displays(self):
-        if self.displays == []:
-            self.init_displays()
+    def get_displays(self, force=False):
+        if self.displays == [] or force:
+            displays = filter(lambda d: d['active'], self.get_outputs())
+            displays = sorted(displays, key=lambda d: d['rect']['x'])
+            displays = [d['name'] for d in displays]
+            self.displays = displays
         return self.displays
-
-    def init_displays(self):
-        displays = filter(lambda d: d['active'], self.get_outputs())
-        displays = sorted(displays, key=lambda d: d['rect']['x'])
-        displays = [d['name'] for d in displays]
-        self.displays = displays
 
     def get_focused_workspace(self):
         focused_workspace = filter(lambda w: w['focused'], self.get_workspaces())[0]
         return focused_workspace
+
+    def get_visible_workspaces(self):
+        return filter(lambda w: w['visible'], self.get_workspaces())
+
 
     def get_windows_with_parent_data(self):
         data = self._get_windows_with_parent_data(self.get_tree(),
@@ -146,17 +128,6 @@ class I3C:
 
         return empty_window
 
-    def do_print(self, tree, indent = 0):
-        name = tree['name']
-        layout = tree['layout']
-        window = tree['window']
-        focused = tree['focused']
-        if name == None:
-            name = ''
-        print (' ' * indent) + str(tree['type']) + ": " + layout + ", " + str(focused) + " - " + name
-        for node in tree['nodes']:
-            self.do_print(node, indent+1)
-
     def sleep_focus(self, num):
         # Sleep due to race condition with i3 changing focus after the second move
         time.sleep(0.1)
@@ -164,9 +135,9 @@ class I3C:
 
     def swap_workspace(self, direction):
         "Swap workspaces"
-        visible_workspaces = filter(lambda w: w['visible'], self.get_workspaces())
-        focused_workspace = self.get_focused_workspace()
+        visible_workspaces = self.get_visible_workspaces()
 
+        focused_workspace = self.get_focused_workspace()
         focused_display = focused_workspace['output']
         focused_workspace_num = focused_workspace['num']
 
@@ -228,6 +199,7 @@ class I3C:
             fallback = non_visible_workspaces_nums[-1]
             rest = filter(lambda n: n < focused_num,
                           non_visible_workspaces_nums)
+            rest.reverse()
 
         if len(rest) > 0:
             self.focus_workspace(rest[0])
@@ -260,7 +232,7 @@ class I3C:
         self.get_tree()
         old_parent_window_data = self.get_windows_with_parent_data()
 
-        self.reload_tree()
+        self.get_tree(True)
 
         new_parent_window_data = self.get_windows_with_parent_data()
         focused_node = filter(lambda w: w['window']['focused'], new_parent_window_data)
@@ -352,7 +324,7 @@ class I3C:
         call('i3-msg focus parent')
         call(['i3-msg split', direction])
         call('i3 open') # TODO anything else?
-        self.reload_tree()
+        self.get_tree(True)
         empty_window = self.get_empty_window()
         empty_window_id = empty_window['id']
 
@@ -365,7 +337,7 @@ class I3C:
         call(['i3-msg', empty_window_str, 'kill'])
         call(['i3-msg', focused_window_str, 'focus'])
 
-        self.reload_tree()
+        self.get_tree(True)
         new_parent_window_data = self.get_windows_with_parent_data()
         focused_node = filter(lambda w: w['window']['focused'],
                               new_parent_window_data)[0]
@@ -534,9 +506,5 @@ elif command == 'dzen2-bar-width':
 elif command == 'dzen2-bar-workspaces':
     i3c.dzen2_bar_workspaces(int(sys.argv[2]))
 elif command == 'debug':
-    # print i3c.get_tree()
-    # print i3c.search_tree('focused', True)
-    # i3c.do_print(i3c.get_tree())
     i3c.get_displays()
     print i3c.displays
-    # print i3c.get_windows_with_parent_data()

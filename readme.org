@@ -43,3 +43,10 @@ https://github.com/i3/i3/blob/c9f0bc174d0746c925443d49bcc07727b631e335/docs/user
 
 * 4.14.1 User Guide
 https://github.com/i3/i3/blob/83a62267dce22d5d898d861bc957a6266268d030/docs/userguide
+
+* Notification System
+Features:
+- [ ] Stable count that can increment / decrement etc.
+- [ ] Flashing notification
+- [ ] Notification with timeout
+- [ ] Ability to remove notifications via keybindings
